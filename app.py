@@ -232,21 +232,32 @@ def recuperar_password_deshabilitado():
 def register():
     """Registro de usuario."""
     data = request.get_json(silent=True) or {}
+
     nombre = (data.get("nombre") or "").strip()
     email = (data.get("email") or "").strip().lower()
     password = data.get("password") or ""
 
+    # Validaciones básicas
     if not nombre or not email or not password:
         return jsonify({"error": "Nombre, email y contraseña son obligatorios."}), 400
 
     if len(password) < 6:
         return jsonify({"error": "La contraseña debe tener al menos 6 caracteres."}), 400
 
-    usuario_id = crear_usuario(nombre, email, password)
-    if not usuario_id:
-        return jsonify({"error": "No se pudo crear usuario. El email puede ya existir."}), 400
+    # 🔥 VALIDACIÓN CLAVE (AQUÍ ESTÁ EL ARREGLO)
+    if obtener_usuario_por_email(email):
+        return jsonify({"error": "Este correo ya está registrado."}), 400
 
-    return jsonify({"message": "Usuario creado exitosamente.", "usuario_id": usuario_id}), 201
+    # Crear usuario
+    usuario_id = crear_usuario(nombre, email, password)
+
+    if not usuario_id:
+        return jsonify({"error": "Error real en servidor (ver consola backend)."}), 500
+
+    return jsonify({
+        "message": "Usuario creado exitosamente.",
+        "usuario_id": usuario_id
+    }), 201
 
 
 @app.post("/api/login")
