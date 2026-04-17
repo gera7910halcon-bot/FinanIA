@@ -130,16 +130,24 @@ def register():
     if len(password) < 6:
         return jsonify({"error": "Mínimo 6 caracteres"}), 400
 
-    # 🔥 VALIDACIÓN CLAVE
-    if obtener_usuario_por_email(email):
-        return jsonify({"error": "Correo ya registrado"}), 400
+    try:
+        # Validar si ya existe
+        if obtener_usuario_por_email(email):
+            return jsonify({"error": "Correo ya registrado"}), 400
 
-    usuario_id = crear_usuario(nombre, email, password)
+        usuario_id = crear_usuario(nombre, email, password)
 
-    if not usuario_id:
-        return jsonify({"error": "Error real en servidor"}), 500
+        if not usuario_id:
+            return jsonify({"error": "No se pudo crear el usuario"}), 500
 
-    return jsonify({"message": "Usuario creado", "id": usuario_id}), 201
+        return jsonify({
+            "message": "Usuario creado",
+            "id": usuario_id
+        }), 201
+
+    except Exception as e:
+        print("🔥 ERROR EN REGISTER:", e)
+        return jsonify({"error": str(e)}), 500
 
 
 # ========================
