@@ -33,26 +33,54 @@ def crear_usuario(nombre, email, password):
     try:
         conn = get_connection()
         cursor = conn.cursor()
+
+        # Normalizar email
+        email = email.strip().lower()
+
+        # Verificar si ya existe el usuario
+        cursor.execute(
+            "SELECT id FROM usuarios WHERE email = %s",
+            (email,)
+        )
+        existente = cursor.fetchone()
+
+        if existente:
+            print("⚠️ El usuario ya existe con ese email")
+            cursor.close()
+            conn.close()
+            return None
+
+        # Hashear contraseña
         password_hash = hash_password(password)
+
+        # Insertar usuario
         cursor.execute(
             "INSERT INTO usuarios (nombre, email, password_hash) VALUES (%s, %s, %s)",
             (nombre, email, password_hash)
         )
+
         conn.commit()
         usuario_id = cursor.lastrowid
+
         # Crear preferencias por defecto
-        cursor.execute(
-            "INSERT INTO preferencias_usuario (usuario_id) VALUES (%s)",
-            (usuario_id,)
-        )
-        conn.commit()
+        try:
+            cursor.execute(
+                "INSERT INTO preferencias_usuario (usuario_id) VALUES (%s)",
+                (usuario_id,)
+            )
+            conn.commit()
+        except Exception as e:
+            print("⚠️ Error creando preferencias (no crítico):", e)
+
         cursor.close()
         conn.close()
+
+        print(f"✅ Usuario creado correctamente ID: {usuario_id}")
         return usuario_id
-    except pymysql.IntegrityError:
-        return None
+
     except Exception as e:
-        print(f"Error creando usuario: {e}")
+        print("🔥 ERROR REAL AL CREAR USUARIO:")
+        print(e)  # 👈 AQUÍ verás el problema real
         return None
 
 def verificar_usuario(email, password):
