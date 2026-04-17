@@ -1037,7 +1037,7 @@
 	</div>
 
 	<script>
-		const API_BASE_URL = window.location.origin + '/api';
+		const API_BASE_URL = window.location.origin;
 		let authToken = localStorage.getItem('authToken');
 		let currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 		let chartInstance = null;
