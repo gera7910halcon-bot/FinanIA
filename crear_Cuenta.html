@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8">
+		<title>FinanIA 💰 - Crear cuenta</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				background-color: #f1f3f6;
+				color: #333;
+				text-align: center;
+				margin: 0;
+				padding: 0;
+			}
+
+			header {
+				background-color: #004aad;
+				color: white;
+				padding: 1em;
+			}
+
+			form {
+				background: white;
+				border-radius: 12px;
+				display: inline-block;
+				padding: 25px;
+				margin-top: 30px;
+				box-shadow: 0 0 10px rgba(0,0,0,0.2);
+				width: 300px;
+			}
+
+			input, button {
+				margin: 10px;
+				padding: 10px;
+				width: 85%;
+				border-radius: 8px;
+				border: 1px solid #ccc;
+				font-size: 14px;
+			}
+
+			button {
+				background-color: #007bff;
+				color: white;
+				border: none;
+				cursor: pointer;
+				font-weight: bold;
+			}
+
+			button:hover {
+				background-color: #0056b3;
+			}
+
+			h2 {
+				color: #007bff;
+			}
+
+			a {
+				color: #007bff;
+				text-decoration: none;
+				font-size: 14px;
+			}
+
+			a:hover {
+				text-decoration: underline;
+			}
+
+			footer {
+				background-color: #004aad;
+				color: white;
+				padding: 10px;
+				position: fixed;
+				bottom: 0;
+				width: 100%;
+			}
+
+			.mensaje {
+				color: green;
+				margin-top: 10px;
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1>FinanIA - Crear cuenta nueva</h1>
+		</header>
+
+		<main>
+			<form id="registroForm" action="#" method="post">
+				<h2>Registro</h2>
+
+				<label for="nombre">Nombre completo:</label><br>
+				<input type="text" id="nombre" name="nombre" required><br>
+
+				<label for="correo">Correo electrónico:</label><br>
+				<input type="email" id="correo" name="correo" required><br>
+
+				<label for="password">Contraseña:</label><br>
+				<input type="password" id="password" name="password" required><br>
+
+				<label for="confirmar">Confirmar contraseña:</label><br>
+				<input type="password" id="confirmar" name="confirmar" required><br>
+
+				<div id="errorMessage" style="color: #dc3545; font-size: 0.9em; margin: 10px; display: none;"></div>
+				<p class="mensaje" id="mensaje" style="display: none;">✅ Cuenta creada exitosamente</p>
+
+				<button type="submit">Crear cuenta</button>
+
+				<p><a href="login.html">¿Ya tienes cuenta? Inicia sesión</a></p>
+			</form>
+		</main>
+
+		<footer>
+			<p>© 2025 FinanIA - Tu asistente financiero inteligente</p>
+		</footer>
+		<script>
+			const API_BASE_URL = 'http://localhost:5000/api';
+			document.getElementById('registroForm').addEventListener('submit', async function(e) {
+				e.preventDefault();
+				const nombre = document.getElementById('nombre').value;
+				const correo = document.getElementById('correo').value;
+				const password = document.getElementById('password').value;
+				const confirmar = document.getElementById('confirmar').value;
+				const errorMessage = document.getElementById('errorMessage');
+				const mensaje = document.getElementById('mensaje');
+				
+				if (password !== confirmar) {
+					errorMessage.textContent = 'Las contraseñas no coinciden';
+					errorMessage.style.display = 'block';
+					mensaje.style.display = 'none';
+					return;
+				}
+				
+				if (password.length < 6) {
+					errorMessage.textContent = 'La contraseña debe tener al menos 6 caracteres';
+					errorMessage.style.display = 'block';
+					mensaje.style.display = 'none';
+					return;
+				}
+				
+				try {
+					const response = await fetch(`${API_BASE_URL}/register`, {
+						method: 'POST',
+						headers: {'Content-Type': 'application/json'},
+						body: JSON.stringify({nombre, email: correo, password})
+					});
+					const data = await response.json();
+					if (response.ok) {
+						errorMessage.style.display = 'none';
+						mensaje.style.display = 'block';
+						setTimeout(() => window.location.href = 'login.html', 1000);
+					} else {
+						errorMessage.textContent = data.error || 'Error al crear la cuenta';
+						errorMessage.style.display = 'block';
+						mensaje.style.display = 'none';
+					}
+				} catch (error) {
+					errorMessage.textContent = 'Error de conexión. Verifica que el servidor esté ejecutándose.';
+					errorMessage.style.display = 'block';
+					mensaje.style.display = 'none';
+				}
+			});
+		</script>
+	</body>
+</html>

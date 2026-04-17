@@ -1,0 +1,2046 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>FinanIA - Dashboard Completo</title>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+	<style>
+		:root {
+			--color-primario: #004481;
+			--color-secundario: #ffd100;
+			--color-fondo: #f7f9fc;
+			--color-texto: #333;
+		}
+		
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: "Segoe UI", Arial, sans-serif;
+		}
+
+		body {
+			background-color: var(--color-fondo);
+			color: var(--color-texto);
+			transition: background-color 0.3s;
+		}
+
+		/* Header */
+		header {
+			background-color: var(--color-primario);
+			color: white;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 15px 40px;
+			position: sticky;
+			top: 0;
+			z-index: 1000;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+			transition: background-color 0.3s;
+		}
+
+		header h1 {
+			font-size: 1.6em;
+			font-weight: 700;
+		}
+
+		.header-right {
+			display: flex;
+			align-items: center;
+			gap: 15px;
+		}
+
+		.notification-bell {
+			position: relative;
+			cursor: pointer;
+			padding: 8px;
+			border-radius: 50%;
+			transition: 0.3s;
+		}
+
+		.notification-bell:hover {
+			background: rgba(255,255,255,0.1);
+		}
+
+		.notification-badge {
+			position: absolute;
+			top: 0;
+			right: 0;
+			background: #dc3545;
+			color: white;
+			border-radius: 50%;
+			width: 20px;
+			height: 20px;
+			font-size: 0.7em;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: bold;
+		}
+
+		.btn-header {
+			background-color: var(--color-secundario);
+			color: var(--color-primario);
+			border: none;
+			padding: 8px 16px;
+			border-radius: 6px;
+			cursor: pointer;
+			font-weight: bold;
+			transition: 0.3s;
+		}
+
+		.btn-header:hover {
+			background-color: #e6b800;
+			transform: translateY(-2px);
+		}
+
+		/* Container */
+		.container {
+			max-width: 1600px;
+			margin: 0 auto;
+			padding: 30px 20px;
+		}
+
+		/* Stats Cards */
+		.stats-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+			gap: 20px;
+			margin-bottom: 30px;
+		}
+
+		.stat-card {
+			background: white;
+			border-radius: 16px;
+			padding: 25px;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+			transition: all 0.3s;
+			cursor: pointer;
+			border-left: 4px solid var(--color-primario);
+		}
+
+		.stat-card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+		}
+
+		.stat-card h3 {
+			color: #666;
+			font-size: 0.85em;
+			margin-bottom: 10px;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+		}
+
+		.stat-card .value {
+			font-size: 2.5em;
+			font-weight: bold;
+			color: var(--color-primario);
+			margin-bottom: 5px;
+		}
+
+		.stat-card .subtitle {
+			color: #999;
+			font-size: 0.9em;
+		}
+
+		.stat-card .trend {
+			margin-top: 10px;
+			font-size: 0.85em;
+			display: flex;
+			align-items: center;
+			gap: 5px;
+		}
+
+		.trend.up {
+			color: #28a745;
+		}
+
+		.trend.down {
+			color: #dc3545;
+		}
+
+		/* Tabs */
+		.tabs {
+			display: flex;
+			gap: 10px;
+			margin-bottom: 25px;
+			border-bottom: 2px solid #e0e0e0;
+			overflow-x: auto;
+			padding-bottom: 10px;
+		}
+
+		.tab {
+			padding: 12px 24px;
+			background: none;
+			border: none;
+			cursor: pointer;
+			font-size: 1em;
+			color: #666;
+			border-bottom: 3px solid transparent;
+			transition: 0.3s;
+			white-space: nowrap;
+			font-weight: 500;
+		}
+
+		.tab.active {
+			color: var(--color-primario);
+			border-bottom-color: var(--color-primario);
+			font-weight: bold;
+		}
+
+		.tab:hover {
+			color: var(--color-primario);
+		}
+
+		/* Content Sections */
+		.content-section {
+			display: none;
+			background: white;
+			border-radius: 16px;
+			padding: 30px;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+			animation: fadeIn 0.3s;
+		}
+
+		@keyframes fadeIn {
+			from { opacity: 0; transform: translateY(10px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+
+		.content-section.active {
+			display: block;
+		}
+
+		/* Forms */
+		.form-group {
+			margin-bottom: 20px;
+		}
+
+		.form-group label {
+			display: block;
+			margin-bottom: 8px;
+			color: var(--color-texto);
+			font-weight: 600;
+			font-size: 0.95em;
+		}
+
+		.form-group input,
+		.form-group select,
+		.form-group textarea {
+			width: 100%;
+			padding: 12px;
+			border: 2px solid #e0e0e0;
+			border-radius: 10px;
+			font-size: 1em;
+			transition: 0.3s;
+		}
+
+		.form-group input:focus,
+		.form-group select:focus,
+		.form-group textarea:focus {
+			outline: none;
+			border-color: var(--color-primario);
+			box-shadow: 0 0 0 3px rgba(0, 68, 129, 0.1);
+		}
+
+		.btn {
+			background-color: var(--color-primario);
+			color: white;
+			border: none;
+			padding: 12px 24px;
+			border-radius: 10px;
+			cursor: pointer;
+			font-size: 1em;
+			font-weight: bold;
+			transition: all 0.3s;
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.btn:hover {
+			background-color: #00335d;
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+		}
+
+		.btn-success {
+			background-color: #28a745;
+		}
+
+		.btn-success:hover {
+			background-color: #218838;
+		}
+
+		.btn-danger {
+			background-color: #dc3545;
+		}
+
+		.btn-danger:hover {
+			background-color: #c82333;
+		}
+
+		.btn-warning {
+			background-color: var(--color-secundario);
+			color: var(--color-primario);
+		}
+
+		.btn-warning:hover {
+			background-color: #e6b800;
+		}
+
+		/* Lists */
+		.list-item {
+			background: #f8f9fa;
+			border-radius: 12px;
+			padding: 20px;
+			margin-bottom: 12px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			transition: 0.3s;
+			border-left: 4px solid transparent;
+		}
+
+		.list-item:hover {
+			background: #e9ecef;
+			transform: translateX(5px);
+			border-left-color: var(--color-primario);
+		}
+
+		.list-item-info {
+			flex: 1;
+		}
+
+		.list-item-title {
+			font-weight: bold;
+			color: var(--color-texto);
+			margin-bottom: 6px;
+			font-size: 1.05em;
+		}
+
+		.list-item-meta {
+			font-size: 0.9em;
+			color: #666;
+			display: flex;
+			gap: 10px;
+			align-items: center;
+		}
+
+		.list-item-amount {
+			font-size: 1.4em;
+			font-weight: bold;
+			color: var(--color-primario);
+			margin-right: 15px;
+		}
+
+		/* Charts */
+		.chart-container {
+			margin: 25px 0;
+			padding: 20px;
+			background: #f8f9fa;
+			border-radius: 12px;
+			position: relative;
+			height: 400px;
+		}
+
+		/* Notifications Panel */
+		.notifications-panel {
+			position: fixed;
+			top: 70px;
+			right: 20px;
+			width: 400px;
+			max-height: 600px;
+			background: white;
+			border-radius: 16px;
+			box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+			z-index: 999;
+			display: none;
+			overflow: hidden;
+			animation: slideIn 0.3s;
+		}
+
+		@keyframes slideIn {
+			from { transform: translateX(100%); opacity: 0; }
+			to { transform: translateX(0); opacity: 1; }
+		}
+
+		.notifications-panel.active {
+			display: block;
+		}
+
+		.notifications-header {
+			padding: 20px;
+			border-bottom: 2px solid #e0e0e0;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background: var(--color-primario);
+			color: white;
+		}
+
+		.notifications-list {
+			max-height: 500px;
+			overflow-y: auto;
+		}
+
+		.notification-item {
+			padding: 15px 20px;
+			border-bottom: 1px solid #e0e0e0;
+			cursor: pointer;
+			transition: 0.3s;
+		}
+
+		.notification-item:hover {
+			background: #f8f9fa;
+		}
+
+		.notification-item.unread {
+			background: #f0f7ff;
+			border-left: 4px solid var(--color-primario);
+		}
+
+		.notification-item .title {
+			font-weight: bold;
+			margin-bottom: 5px;
+			color: var(--color-texto);
+		}
+
+		.notification-item .message {
+			font-size: 0.9em;
+			color: #666;
+			margin-bottom: 5px;
+		}
+
+		.notification-item .time {
+			font-size: 0.8em;
+			color: #999;
+		}
+
+		/* Chatbot */
+		.chatbot-container {
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			width: 380px;
+			height: 500px;
+			background: white;
+			border-radius: 20px;
+			box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+			z-index: 998;
+			display: none;
+			flex-direction: column;
+			overflow: hidden;
+		}
+
+		.chatbot-container.active {
+			display: flex;
+		}
+
+		.chatbot-header {
+			background: var(--color-primario);
+			color: white;
+			padding: 15px 20px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.chatbot-messages {
+			flex: 1;
+			overflow-y: auto;
+			padding: 20px;
+			background: #f8f9fa;
+		}
+
+		.message {
+			margin-bottom: 15px;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.message.user {
+			align-items: flex-end;
+		}
+
+		.message.bot {
+			align-items: flex-start;
+		}
+
+		.message-bubble {
+			max-width: 80%;
+			padding: 12px 16px;
+			border-radius: 18px;
+			word-wrap: break-word;
+		}
+
+		.message.user .message-bubble {
+			background: var(--color-primario);
+			color: white;
+			border-bottom-right-radius: 4px;
+		}
+
+		.message.bot .message-bubble {
+			background: white;
+			color: var(--color-texto);
+			border-bottom-left-radius: 4px;
+			box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+		}
+
+		.chatbot-input {
+			padding: 15px 20px;
+			border-top: 2px solid #e0e0e0;
+			display: flex;
+			gap: 10px;
+		}
+
+		.chatbot-input input {
+			flex: 1;
+			padding: 10px;
+			border: 2px solid #e0e0e0;
+			border-radius: 20px;
+			outline: none;
+		}
+
+		.chatbot-input input:focus {
+			border-color: var(--color-primario);
+		}
+
+		.chatbot-toggle {
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			width: 60px;
+			height: 60px;
+			background: var(--color-primario);
+			color: white;
+			border: none;
+			border-radius: 50%;
+			cursor: pointer;
+			font-size: 24px;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+			z-index: 997;
+			transition: 0.3s;
+		}
+
+		.chatbot-toggle:hover {
+			transform: scale(1.1);
+			box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+		}
+
+		.chatbot-toggle.active {
+			display: none;
+		}
+
+		/* Settings Panel */
+		.settings-panel {
+			position: fixed;
+			top: 70px;
+			right: 20px;
+			width: 400px;
+			max-height: 80vh;
+			background: white;
+			border-radius: 16px;
+			box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+			z-index: 999;
+			display: none;
+			overflow-y: auto;
+			animation: slideIn 0.3s;
+		}
+
+		.settings-panel.active {
+			display: block;
+		}
+
+		.settings-header {
+			padding: 20px;
+			border-bottom: 2px solid #e0e0e0;
+			background: var(--color-primario);
+			color: white;
+		}
+
+		.settings-content {
+			padding: 20px;
+		}
+
+		.color-picker {
+			display: flex;
+			gap: 10px;
+			margin-top: 10px;
+		}
+
+		.color-option {
+			width: 50px;
+			height: 50px;
+			border-radius: 10px;
+			cursor: pointer;
+			border: 3px solid transparent;
+			transition: 0.3s;
+		}
+
+		.color-option:hover {
+			transform: scale(1.1);
+			border-color: #333;
+		}
+
+		.color-option.active {
+			border-color: #333;
+			box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+		}
+
+		/* Tips/Consejos */
+		.tips-container {
+			background: linear-gradient(135deg, var(--color-primario), #0074c1);
+			color: white;
+			border-radius: 16px;
+			padding: 25px;
+			margin-bottom: 25px;
+		}
+
+		.tip-card {
+			background: rgba(255,255,255,0.1);
+			border-radius: 12px;
+			padding: 20px;
+			margin-bottom: 15px;
+			backdrop-filter: blur(10px);
+		}
+
+		.tip-card h4 {
+			margin-bottom: 10px;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		/* Loading */
+		.loading {
+			text-align: center;
+			padding: 40px;
+			color: #666;
+		}
+
+		.spinner {
+			border: 4px solid #f3f3f3;
+			border-top: 4px solid var(--color-primario);
+			border-radius: 50%;
+			width: 40px;
+			height: 40px;
+			animation: spin 1s linear infinite;
+			margin: 0 auto 20px;
+		}
+
+		@keyframes spin {
+			0% { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
+
+		/* File Upload */
+		.file-upload {
+			border: 3px dashed #ccc;
+			border-radius: 12px;
+			padding: 40px;
+			text-align: center;
+			cursor: pointer;
+			transition: 0.3s;
+			background: #f8f9fa;
+		}
+
+		.file-upload:hover {
+			border-color: var(--color-primario);
+			background: #f0f7ff;
+		}
+
+		.file-upload input[type="file"] {
+			display: none;
+		}
+
+		/* Responsive */
+		@media (max-width: 768px) {
+			header {
+				flex-direction: column;
+				gap: 15px;
+				padding: 15px 20px;
+			}
+
+			.stats-grid {
+				grid-template-columns: 1fr;
+			}
+
+			.notifications-panel,
+			.settings-panel {
+				width: calc(100% - 40px);
+				right: 20px;
+				left: 20px;
+			}
+
+			.chatbot-container {
+				width: calc(100% - 40px);
+				right: 20px;
+				left: 20px;
+				height: calc(100vh - 100px);
+			}
+
+			.list-item {
+				flex-direction: column;
+				align-items: flex-start;
+			}
+
+			.list-item-amount {
+				margin-top: 10px;
+				margin-right: 0;
+			}
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<h1>FinanIA</h1>
+		<div class="header-right">
+			<div class="notification-bell" onclick="toggleNotifications()">
+				🔔
+				<span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+			</div>
+			<button class="btn-header" onclick="toggleSettings()">⚙️ Configuración</button>
+			<div class="user-info">
+				<span id="userName">Usuario</span>
+			</div>
+			<button class="btn-header" onclick="logout()">Cerrar Sesión</button>
+		</div>
+	</header>
+
+	<div class="container">
+		<!-- Stats Cards -->
+		<div class="stats-grid">
+			<div class="stat-card" onclick="showTab('gastos')">
+				<h3>Gastos del Mes</h3>
+				<div class="value" id="totalGastos">$0.00</div>
+				<div class="subtitle" id="gastosSubtitle">Este mes</div>
+			</div>
+			<div class="stat-card" onclick="showTab('ahorros')">
+				<h3>Ahorros Totales</h3>
+				<div class="value" id="totalAhorros">$0.00</div>
+				<div class="subtitle">Acumulado</div>
+			</div>
+			<div class="stat-card" onclick="showTab('ahorro')">
+				<h3>Racha de Ahorro</h3>
+				<div class="value" id="rachaAhorro">0</div>
+				<div class="subtitle">días consecutivos</div>
+			</div>
+			<div class="stat-card" onclick="showTab('predicciones')">
+				<h3>Proyección Mensual</h3>
+				<div class="value" id="proyeccionMes">$0.00</div>
+				<div class="subtitle" id="proyeccionSubtitle">Estimado</div>
+			</div>
+		</div>
+
+		<!-- Tips Section -->
+		<div class="tips-container" id="tipsContainer">
+			<h3 style="margin-bottom: 15px;">💡 Consejos del Día</h3>
+			<div id="tipsContent"></div>
+		</div>
+
+		<!-- Tabs -->
+		<div class="tabs">
+			<button class="tab active" onclick="showTab('gastos')">💳 Gastos</button>
+			<button class="tab" onclick="showTab('tickets')">🎫 Tickets</button>
+			<button class="tab" onclick="showTab('ahorros')">💰 Ahorros</button>
+			<button class="tab" onclick="showTab('ahorro')">🔥 Racha</button>
+			<button class="tab" onclick="showTab('estadisticas')">📊 Estadísticas</button>
+			<button class="tab" onclick="showTab('graficas')">📈 Gráficas</button>
+			<button class="tab" onclick="showTab('analisis')">🔍 Análisis</button>
+			<button class="tab" onclick="showTab('reportes')">📄 Reportes</button>
+			<button class="tab" onclick="showTab('predicciones')">🔮 Predicciones</button>
+		</div>
+
+		<!-- Gastos Section -->
+		<div id="gastos" class="content-section active">
+			<h2>Gestionar Gastos</h2>
+			<form id="gastoForm" onsubmit="agregarGasto(event)">
+				<div class="form-group">
+					<label>Descripción</label>
+					<input type="text" id="gastoDescripcion" required placeholder="Ej: Compra en supermercado">
+				</div>
+				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+					<div class="form-group">
+						<label>Cantidad</label>
+						<input type="number" step="0.01" id="gastoCantidad" required placeholder="0.00">
+					</div>
+					<div class="form-group">
+						<label>Categoría</label>
+						<select id="gastoCategoria" required>
+							<option value="Alimentación">Alimentación</option>
+							<option value="Transporte">Transporte</option>
+							<option value="Entretenimiento">Entretenimiento</option>
+							<option value="Salud">Salud</option>
+							<option value="Educación">Educación</option>
+							<option value="Servicios">Servicios</option>
+							<option value="Otros">Otros</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label>Fecha</label>
+					<input type="date" id="gastoFecha" required>
+				</div>
+				<button type="submit" class="btn">➕ Agregar Gasto</button>
+			</form>
+			<div id="gastosList" style="margin-top: 30px;"></div>
+		</div>
+
+		<!-- Tickets Section -->
+		<div id="tickets" class="content-section">
+			<h2>Subir Ticket</h2>
+			<form id="ticketForm" onsubmit="subirTicket(event)">
+				<div class="form-group">
+					<label>Imagen del Ticket</label>
+					<div class="file-upload" onclick="document.getElementById('ticketImagen').click()">
+						<input type="file" id="ticketImagen" accept="image/*" required>
+						<p style="font-size: 1.2em; margin-bottom: 10px;">📷</p>
+						<p>Haz clic para seleccionar una imagen</p>
+						<p id="fileName" style="margin-top: 10px; color: #666; font-weight: bold;"></p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label>Descripción (opcional)</label>
+					<input type="text" id="ticketDescripcion" placeholder="Descripción del ticket">
+				</div>
+				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+					<div class="form-group">
+						<label>Categoría</label>
+						<select id="ticketCategoria">
+							<option value="Otros">Auto-detectar</option>
+							<option value="Alimentación">Alimentación</option>
+							<option value="Transporte">Transporte</option>
+							<option value="Entretenimiento">Entretenimiento</option>
+							<option value="Salud">Salud</option>
+							<option value="Educación">Educación</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label>Cantidad (opcional)</label>
+						<input type="number" step="0.01" id="ticketCantidad" value="0" placeholder="0.00">
+					</div>
+				</div>
+				<div class="form-group">
+					<label>Fecha</label>
+					<input type="date" id="ticketFecha" required>
+				</div>
+				<button type="submit" class="btn">📤 Subir Ticket</button>
+			</form>
+			<div id="ticketsList" style="margin-top: 30px;"></div>
+		</div>
+
+		<!-- Ahorros Section -->
+		<div id="ahorros" class="content-section">
+			<h2>Registrar Ahorros</h2>
+			<form id="ahorroForm" onsubmit="agregarAhorro(event)">
+				<div class="form-group">
+					<label>Cantidad Ahorrada</label>
+					<input type="number" step="0.01" id="ahorroCantidad" required placeholder="0.00" min="0.01">
+				</div>
+				<div class="form-group">
+					<label>Descripción (opcional)</label>
+					<textarea id="ahorroDescripcion" rows="3" placeholder="Ej: Ahorro del mes de enero"></textarea>
+				</div>
+				<div class="form-group">
+					<label>Fecha</label>
+					<input type="date" id="ahorroFecha" required>
+				</div>
+				<button type="submit" class="btn btn-success">💰 Registrar Ahorro</button>
+			</form>
+			<div class="stats-grid" style="margin-top: 20px;">
+				<div class="stat-card">
+					<h3>Ahorro del Mes</h3>
+					<div class="value" id="ahorroMesResumen">$0.00</div>
+				</div>
+				<div class="stat-card">
+					<h3>Meta Mensual</h3>
+					<div class="value" id="metaAhorroResumen">$0.00</div>
+				</div>
+				<div class="stat-card">
+					<h3>Avance de Meta</h3>
+					<div class="value" id="avanceMetaAhorro">0%</div>
+				</div>
+				<div class="stat-card">
+					<h3>Faltante</h3>
+					<div class="value" id="faltanteMetaAhorro">$0.00</div>
+				</div>
+			</div>
+			<h3 style="margin-top: 30px;">Historial de Ahorros</h3>
+			<div id="ahorrosList"></div>
+		</div>
+
+		<!-- Ahorro Racha Section -->
+		<div id="ahorro" class="content-section">
+			<div class="racha-display" style="text-align: center; padding: 40px; background: linear-gradient(135deg, var(--color-primario), #0074c1); color: white; border-radius: 16px; margin-bottom: 25px;">
+				<div style="font-size: 1.2em; margin-bottom: 10px;">Tu Racha de Ahorro</div>
+				<div style="font-size: 5em; font-weight: bold; margin: 20px 0;" id="rachaDisplay">0</div>
+				<div style="font-size: 1.2em;" id="rachaText">días consecutivos</div>
+			</div>
+			<button class="btn btn-success" onclick="marcarAhorro()" style="width: 100%; margin-bottom: 20px; padding: 15px; font-size: 1.1em;">
+				✅ Marcar Día de Ahorro
+			</button>
+			<h3>Historial de Días de Ahorro</h3>
+			<div id="diasAhorroList"></div>
+		</div>
+
+		<!-- Estadísticas Section -->
+		<div id="estadisticas" class="content-section">
+			<h2>Estadísticas del Mes</h2>
+			<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+				<div class="form-group">
+					<label>Mes</label>
+					<input type="month" id="estadisticasMes" required>
+				</div>
+				<div style="display: flex; align-items: flex-end;">
+					<button class="btn" onclick="cargarEstadisticas()">📊 Cargar Estadísticas</button>
+				</div>
+			</div>
+			<div id="estadisticasContent"></div>
+		</div>
+
+		<!-- Gráficas Section -->
+		<div id="graficas" class="content-section">
+			<h2>Gráficas Interactivas</h2>
+			<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+				<div class="form-group">
+					<label>Período</label>
+					<select id="graficasPeriodo" onchange="cargarGraficas()">
+						<option value="mes">Este Mes</option>
+						<option value="3meses">Últimos 3 Meses</option>
+						<option value="año">Este Año</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label>Tipo de Gráfica</label>
+					<select id="graficasTipo" onchange="cargarGraficas()">
+						<option value="categoria">Por Categoría</option>
+						<option value="tiempo">Por Tiempo</option>
+						<option value="comparacion">Comparación</option>
+					</select>
+				</div>
+			</div>
+			<div class="chart-container">
+				<canvas id="chartCanvas"></canvas>
+			</div>
+		</div>
+
+		<!-- Análisis Section -->
+		<div id="analisis" class="content-section">
+			<h2>Análisis Avanzado de Gastos</h2>
+			<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+				<div class="form-group">
+					<label>Mes</label>
+					<input type="month" id="analisisMes" required>
+				</div>
+				<div style="display: flex; align-items: flex-end;">
+					<button class="btn" onclick="cargarAnalisis()">🔍 Analizar</button>
+				</div>
+			</div>
+			<div id="analisisContent"></div>
+		</div>
+
+		<!-- Reportes Section -->
+		<div id="reportes" class="content-section">
+			<h2>Generar Reportes</h2>
+			<form id="reporteForm" onsubmit="generarReporte(event)">
+				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+					<div class="form-group">
+						<label>Tipo de Reporte</label>
+						<select id="reporteTipo" required>
+							<option value="mensual">Mensual</option>
+							<option value="anual">Anual</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label>Mes/Año</label>
+						<input type="month" id="reporteFecha" required>
+					</div>
+				</div>
+				<button type="submit" class="btn">📄 Generar Reporte</button>
+			</form>
+			<div id="reporteContent" style="margin-top: 30px;"></div>
+		</div>
+
+		<!-- Predicciones Section -->
+		<div id="predicciones" class="content-section">
+			<h2>Predicciones y Recomendaciones</h2>
+			<button class="btn" onclick="cargarPredicciones()">🔄 Actualizar Predicciones</button>
+			<div id="prediccionesContent" style="margin-top: 30px;"></div>
+		</div>
+	</div>
+
+	<!-- Notifications Panel -->
+	<div class="notifications-panel" id="notificationsPanel">
+		<div class="notifications-header">
+			<h3>🔔 Notificaciones</h3>
+			<button onclick="marcarTodasLeidas()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Marcar todas leídas</button>
+		</div>
+		<div class="notifications-list" id="notificationsList">
+			<div class="loading">Cargando notificaciones...</div>
+		</div>
+	</div>
+
+	<!-- Settings Panel -->
+	<div class="settings-panel" id="settingsPanel">
+		<div class="settings-header">
+			<h3>⚙️ Configuración</h3>
+			<button onclick="toggleSettings()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">✕</button>
+		</div>
+		<div class="settings-content">
+			<h4 style="margin-bottom: 15px;">Personalización de Colores</h4>
+			<div class="form-group">
+				<label>Color Primario</label>
+				<input type="color" id="colorPrimario" value="#004481" onchange="aplicarColores()">
+			</div>
+			<div class="form-group">
+				<label>Color Secundario</label>
+				<input type="color" id="colorSecundario" value="#ffd100" onchange="aplicarColores()">
+			</div>
+			<h4 style="margin: 25px 0 15px 0;">Configuración Financiera</h4>
+			<div class="form-group">
+				<label>Ingresos Mensuales</label>
+				<input type="number" step="0.01" min="0" id="ingresosMensuales" placeholder="5000.00">
+			</div>
+			<div class="form-group">
+				<label>Meta de Ahorro Mensual</label>
+				<input type="number" step="0.01" min="0" id="metaAhorroMensual" placeholder="1000.00">
+			</div>
+			<button class="btn" onclick="guardarPreferencias()" style="width: 100%; margin-top: 20px;">💾 Guardar Preferencias</button>
+		</div>
+	</div>
+
+	<!-- Chatbot -->
+	<button class="chatbot-toggle" id="chatbotToggle" onclick="toggleChatbot()">💬</button>
+	<div class="chatbot-container" id="chatbotContainer">
+		<div class="chatbot-header">
+			<div>
+				<h3 style="margin: 0;">🤖 Asistente FinanIA</h3>
+				<p style="margin: 5px 0 0 0; font-size: 0.85em; opacity: 0.9;">Tu asistente financiero inteligente</p>
+			</div>
+			<button onclick="toggleChatbot()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">✕</button>
+		</div>
+		<div class="chatbot-messages" id="chatbotMessages">
+			<div class="message bot">
+				<div class="message-bubble">
+					¡Hola! 👋 Soy tu asistente financiero de FinanIA. ¿En qué puedo ayudarte hoy?
+				</div>
+			</div>
+		</div>
+		<div class="chatbot-input">
+			<input type="text" id="chatbotInput" placeholder="Escribe tu mensaje..." onkeypress="if(event.key==='Enter') enviarMensajeChatbot()">
+			<button class="btn" onclick="enviarMensajeChatbot()" style="padding: 10px 20px;">Enviar</button>
+		</div>
+	</div>
+
+	<script>
+		const API_BASE_URL = 'http://localhost:5000/api';
+		let authToken = localStorage.getItem('authToken');
+		let currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+		let chartInstance = null;
+		let preferencias = {};
+
+		// Si la sesión expira, redirigir automáticamente al login.
+		const originalFetch = window.fetch.bind(window);
+		window.fetch = async (...args) => {
+			const response = await originalFetch(...args);
+			if (response.status === 401) {
+				localStorage.removeItem('authToken');
+				localStorage.removeItem('currentUser');
+				window.location.href = 'login.html';
+				throw new Error('Sesión expirada');
+			}
+			return response;
+		};
+
+		// Verificar autenticación
+		if (!authToken) {
+			window.location.href = 'login.html';
+		}
+
+		// Redirigir a panel de administrador si es admin
+		if (currentUser.es_administrador) {
+			window.location.href = 'admin_dashboard.html';
+		}
+
+		// Inicializar
+		document.addEventListener('DOMContentLoaded', function() {
+			document.getElementById('userName').textContent = currentUser.nombre || 'Usuario';
+			document.getElementById('gastoFecha').value = new Date().toISOString().split('T')[0];
+			document.getElementById('ticketFecha').value = new Date().toISOString().split('T')[0];
+			document.getElementById('ahorroFecha').value = new Date().toISOString().split('T')[0];
+			document.getElementById('estadisticasMes').value = new Date().toISOString().slice(0, 7);
+			document.getElementById('analisisMes').value = new Date().toISOString().slice(0, 7);
+			document.getElementById('reporteFecha').value = new Date().toISOString().slice(0, 7);
+			
+			cargarPreferencias();
+			cargarGastos();
+			cargarTickets();
+			cargarAhorros();
+			cargarRacha();
+			cargarEstadisticas();
+			cargarPredicciones();
+			cargarNotificaciones();
+			cargarConsejos();
+			cargarGraficas();
+
+			// File input change
+			document.getElementById('ticketImagen').addEventListener('change', function(e) {
+				const fileName = e.target.files[0]?.name || '';
+				document.getElementById('fileName').textContent = fileName || '';
+			});
+		});
+
+		function getAuthHeaders() {
+			return {
+				'Authorization': `Bearer ${authToken}`,
+				'Content-Type': 'application/json'
+			};
+		}
+
+		function showTab(tabName) {
+			document.querySelectorAll('.content-section').forEach(section => {
+				section.classList.remove('active');
+			});
+			document.querySelectorAll('.tab').forEach(tab => {
+				tab.classList.remove('active');
+			});
+
+			document.getElementById(tabName).classList.add('active');
+			event.target.classList.add('active');
+
+			// Cargar datos específicos de la pestaña
+			if (tabName === 'graficas') {
+				cargarGraficas();
+			} else if (tabName === 'analisis') {
+				cargarAnalisis();
+			}
+		}
+
+		// ========== PREFERENCIAS ==========
+		async function cargarPreferencias() {
+			try {
+				const response = await fetch(`${API_BASE_URL}/preferencias`, {
+					headers: getAuthHeaders()
+				});
+				preferencias = await response.json();
+				
+				document.documentElement.style.setProperty('--color-primario', preferencias.color_primario);
+				document.documentElement.style.setProperty('--color-secundario', preferencias.color_secundario);
+				document.getElementById('colorPrimario').value = preferencias.color_primario;
+				document.getElementById('colorSecundario').value = preferencias.color_secundario;
+				document.getElementById('ingresosMensuales').value = preferencias.ingresos_mensuales;
+				document.getElementById('metaAhorroMensual').value = preferencias.meta_ahorro_mensual;
+			} catch (error) {
+				console.error('Error cargando preferencias:', error);
+			}
+		}
+
+		async function aplicarColores() {
+			const primario = document.getElementById('colorPrimario').value;
+			const secundario = document.getElementById('colorSecundario').value;
+			
+			document.documentElement.style.setProperty('--color-primario', primario);
+			document.documentElement.style.setProperty('--color-secundario', secundario);
+		}
+
+		async function guardarPreferencias() {
+			const ingresos = parseFloat(document.getElementById('ingresosMensuales').value) || 0;
+			const metaAhorro = parseFloat(document.getElementById('metaAhorroMensual').value) || 0;
+
+			if (ingresos < 0) {
+				alert('Los ingresos mensuales no pueden ser negativos.');
+				return;
+			}
+
+			if (metaAhorro < 0) {
+				alert('La meta de ahorro mensual no puede ser negativa.');
+				return;
+			}
+
+			if (metaAhorro > ingresos) {
+				alert('La meta de ahorro mensual no puede ser mayor que los ingresos mensuales.');
+				return;
+			}
+
+			const data = {
+				color_primario: document.getElementById('colorPrimario').value,
+				color_secundario: document.getElementById('colorSecundario').value,
+				ingresos_mensuales: ingresos,
+				meta_ahorro_mensual: metaAhorro
+			};
+
+			try {
+				const response = await fetch(`${API_BASE_URL}/preferencias`, {
+					method: 'PUT',
+					headers: getAuthHeaders(),
+					body: JSON.stringify(data)
+				});
+
+				if (response.ok) {
+					alert('✅ Preferencias guardadas exitosamente');
+					cargarPreferencias();
+					cargarEstadisticas();
+					cargarPredicciones();
+				} else {
+					const error = await response.json();
+					alert(error.error || 'No se pudieron guardar las preferencias');
+				}
+			} catch (error) {
+				alert('Error al guardar preferencias');
+			}
+		}
+
+		function toggleSettings() {
+			document.getElementById('settingsPanel').classList.toggle('active');
+		}
+
+		// ========== NOTIFICACIONES ==========
+		async function cargarNotificaciones() {
+			try {
+				const response = await fetch(`${API_BASE_URL}/notificaciones?no_leidas=true`, {
+					headers: getAuthHeaders()
+				});
+				const notificaciones = await response.json();
+				
+				const badge = document.getElementById('notificationBadge');
+				if (notificaciones.length > 0) {
+					badge.textContent = notificaciones.length;
+					badge.style.display = 'flex';
+				} else {
+					badge.style.display = 'none';
+				}
+
+				// Cargar todas las notificaciones para el panel
+				const responseAll = await fetch(`${API_BASE_URL}/notificaciones?limite=20`, {
+					headers: getAuthHeaders()
+				});
+				const todas = await responseAll.json();
+				
+				const list = document.getElementById('notificationsList');
+				if (todas.length === 0) {
+					list.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No hay notificaciones</div>';
+					return;
+				}
+
+				list.innerHTML = todas.map(n => `
+					<div class="notification-item ${n.leida ? '' : 'unread'}" onclick="marcarNotificacionLeida(${n.id})">
+						<div class="title">${n.titulo}</div>
+						<div class="message">${n.mensaje}</div>
+						<div class="time">${new Date(n.fecha_creacion).toLocaleString('es-ES')}</div>
+					</div>
+				`).join('');
+			} catch (error) {
+				console.error('Error cargando notificaciones:', error);
+			}
+		}
+
+		async function marcarNotificacionLeida(id) {
+			try {
+				await fetch(`${API_BASE_URL}/notificaciones/${id}/leida`, {
+					method: 'POST',
+					headers: getAuthHeaders()
+				});
+				cargarNotificaciones();
+			} catch (error) {
+				console.error('Error:', error);
+			}
+		}
+
+		async function marcarTodasLeidas() {
+			try {
+				await fetch(`${API_BASE_URL}/notificaciones/leer-todas`, {
+					method: 'POST',
+					headers: getAuthHeaders()
+				});
+				cargarNotificaciones();
+			} catch (error) {
+				console.error('Error:', error);
+			}
+		}
+
+		function toggleNotifications() {
+			document.getElementById('notificationsPanel').classList.toggle('active');
+			cargarNotificaciones();
+		}
+
+		// ========== CONSEJOS ==========
+		async function cargarConsejos() {
+			const consejos = [
+				{ icon: '💡', titulo: 'Regla 50/30/20', texto: 'Destina 50% a necesidades, 30% a deseos y 20% a ahorros e inversiones.' },
+				{ icon: '📊', titulo: 'Revisa Semanalmente', texto: 'Revisa tus gastos cada semana para identificar patrones y ajustar tu presupuesto.' },
+				{ icon: '🎯', titulo: 'Establece Metas', texto: 'Define metas de ahorro claras y realistas para mantenerte motivado.' },
+				{ icon: '💰', titulo: 'Ahorra Primero', texto: 'Ahorra al menos el 20% de tus ingresos antes de gastar en otras cosas.' },
+				{ icon: '📱', titulo: 'Usa la App', texto: 'Registra todos tus gastos en tiempo real para tener un control preciso.' }
+			];
+
+			const randomConsejos = consejos.sort(() => 0.5 - Math.random()).slice(0, 2);
+			const content = document.getElementById('tipsContent');
+			content.innerHTML = randomConsejos.map(c => `
+				<div class="tip-card">
+					<h4>${c.icon} ${c.titulo}</h4>
+					<p>${c.texto}</p>
+				</div>
+			`).join('');
+		}
+
+		// ========== CHATBOT ==========
+		function toggleChatbot() {
+			const container = document.getElementById('chatbotContainer');
+			const toggle = document.getElementById('chatbotToggle');
+			container.classList.toggle('active');
+			toggle.classList.toggle('active');
+		}
+
+		async function enviarMensajeChatbot() {
+			const input = document.getElementById('chatbotInput');
+			const mensaje = input.value.trim();
+			
+			if (!mensaje) return;
+
+			// Agregar mensaje del usuario
+			const messagesDiv = document.getElementById('chatbotMessages');
+			messagesDiv.innerHTML += `
+				<div class="message user">
+					<div class="message-bubble">${mensaje}</div>
+				</div>
+			`;
+			messagesDiv.scrollTop = messagesDiv.scrollHeight;
+			input.value = '';
+
+			// Obtener respuesta del bot
+			try {
+				const response = await fetch(`${API_BASE_URL}/chatbot`, {
+					method: 'POST',
+					headers: getAuthHeaders(),
+					body: JSON.stringify({ mensaje })
+				});
+				const data = await response.json();
+				
+				messagesDiv.innerHTML += `
+					<div class="message bot">
+						<div class="message-bubble">${data.respuesta}</div>
+					</div>
+				`;
+				messagesDiv.scrollTop = messagesDiv.scrollHeight;
+			} catch (error) {
+				messagesDiv.innerHTML += `
+					<div class="message bot">
+						<div class="message-bubble">Lo siento, hubo un error. Por favor intenta de nuevo.</div>
+					</div>
+				`;
+			}
+		}
+
+		// ========== GASTOS ==========
+		async function agregarGasto(e) {
+			e.preventDefault();
+			const data = {
+				descripcion: document.getElementById('gastoDescripcion').value,
+				cantidad: parseFloat(document.getElementById('gastoCantidad').value),
+				categoria: document.getElementById('gastoCategoria').value,
+				fecha: document.getElementById('gastoFecha').value
+			};
+
+			try {
+				const response = await fetch(`${API_BASE_URL}/gastos`, {
+					method: 'POST',
+					headers: getAuthHeaders(),
+					body: JSON.stringify(data)
+				});
+
+				if (response.ok) {
+					document.getElementById('gastoForm').reset();
+					document.getElementById('gastoFecha').value = new Date().toISOString().split('T')[0];
+					cargarGastos();
+					cargarEstadisticas();
+					cargarPredicciones();
+					cargarGraficas();
+					mostrarNotificacion('Gasto agregado exitosamente', 'success');
+				} else {
+					const error = await response.json();
+					mostrarNotificacion(error.error || 'Error al agregar gasto', 'error');
+				}
+			} catch (error) {
+				mostrarNotificacion('Error de conexión', 'error');
+			}
+		}
+
+		async function cargarGastos() {
+			try {
+				const response = await fetch(`${API_BASE_URL}/gastos?limite=50`, {
+					headers: getAuthHeaders()
+				});
+				const gastos = await response.json();
+				
+				const list = document.getElementById('gastosList');
+				if (gastos.length === 0) {
+					list.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No hay gastos registrados</p>';
+					return;
+				}
+
+				list.innerHTML = gastos.map(gasto => `
+					<div class="list-item">
+						<div class="list-item-info">
+							<div class="list-item-title">${gasto.descripcion}</div>
+							<div class="list-item-meta">
+								<span>${gasto.categoria}</span>
+								<span>•</span>
+								<span>${new Date(gasto.fecha).toLocaleDateString('es-ES')}</span>
+							</div>
+						</div>
+						<div style="display: flex; align-items: center;">
+							<div class="list-item-amount">$${gasto.cantidad.toFixed(2)}</div>
+							<button class="btn btn-danger" onclick="eliminarGasto(${gasto.id})" style="padding: 8px 16px;">Eliminar</button>
+						</div>
+					</div>
+				`).join('');
+			} catch (error) {
+				console.error('Error cargando gastos:', error);
+			}
+		}
+
+		async function eliminarGasto(id) {
+			if (!confirm('¿Estás seguro de eliminar este gasto?')) return;
+
+			try {
+				const response = await fetch(`${API_BASE_URL}/gastos/${id}`, {
+					method: 'DELETE',
+					headers: getAuthHeaders()
+				});
+
+				if (response.ok) {
+					cargarGastos();
+					cargarEstadisticas();
+					cargarPredicciones();
+					cargarGraficas();
+					mostrarNotificacion('Gasto eliminado', 'success');
+				}
+			} catch (error) {
+				mostrarNotificacion('Error al eliminar', 'error');
+			}
+		}
+
+		// ========== TICKETS ==========
+		async function subirTicket(e) {
+			e.preventDefault();
+			const formData = new FormData();
+			const fileInput = document.getElementById('ticketImagen');
+			
+			if (!fileInput.files[0]) {
+				mostrarNotificacion('Por favor selecciona una imagen', 'error');
+				return;
+			}
+
+			formData.append('imagen', fileInput.files[0]);
+			formData.append('descripcion', document.getElementById('ticketDescripcion').value);
+			formData.append('categoria', document.getElementById('ticketCategoria').value);
+			formData.append('cantidad', document.getElementById('ticketCantidad').value);
+			formData.append('fecha', document.getElementById('ticketFecha').value);
+
+			try {
+				const response = await fetch(`${API_BASE_URL}/tickets`, {
+					method: 'POST',
+					headers: {
+						'Authorization': `Bearer ${authToken}`
+					},
+					body: formData
+				});
+
+				if (response.ok) {
+					document.getElementById('ticketForm').reset();
+					document.getElementById('ticketFecha').value = new Date().toISOString().split('T')[0];
+					document.getElementById('fileName').textContent = '';
+					cargarTickets();
+					cargarEstadisticas();
+					cargarPredicciones();
+					cargarGraficas();
+					mostrarNotificacion('Ticket subido exitosamente', 'success');
+				} else {
+					const error = await response.json();
+					mostrarNotificacion(error.error || 'Error al subir ticket', 'error');
+				}
+			} catch (error) {
+				mostrarNotificacion('Error de conexión', 'error');
+			}
+		}
+
+		async function cargarTickets() {
+			try {
+				const response = await fetch(`${API_BASE_URL}/tickets?limite=50`, {
+					headers: getAuthHeaders()
+				});
+				const tickets = await response.json();
+				
+				const list = document.getElementById('ticketsList');
+				if (tickets.length === 0) {
+					list.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No hay tickets registrados</p>';
+					return;
+				}
+
+				list.innerHTML = tickets.map(ticket => `
+					<div class="list-item">
+						<div class="list-item-info">
+							<div class="list-item-title">${ticket.descripcion || 'Ticket sin descripción'}</div>
+							<div class="list-item-meta">
+								<span>${ticket.categoria}</span>
+								<span>•</span>
+								<span>${new Date(ticket.fecha).toLocaleDateString('es-ES')}</span>
+							</div>
+							${ticket.imagen_path ? `<img src="/${ticket.imagen_path}?token=${authToken}" style="max-width: 200px; margin-top: 10px; border-radius: 8px; cursor: pointer;" onclick="window.open(this.src, '_blank')">` : ''}
+						</div>
+						<div style="display: flex; align-items: center;">
+							<div class="list-item-amount">$${ticket.cantidad.toFixed(2)}</div>
+							<button class="btn btn-danger" onclick="eliminarTicket(${ticket.id})" style="padding: 8px 16px;">🗑️</button>
+						</div>
+					</div>
+				`).join('');
+			} catch (error) {
+				console.error('Error cargando tickets:', error);
+			}
+		}
+
+		async function eliminarTicket(id) {
+			if (!confirm('¿Estás seguro de eliminar este ticket?')) return;
+
+			try {
+				const response = await fetch(`${API_BASE_URL}/tickets/${id}`, {
+					method: 'DELETE',
+					headers: getAuthHeaders()
+				});
+
+				if (response.ok) {
+					cargarTickets();
+					cargarEstadisticas();
+					cargarPredicciones();
+					cargarGraficas();
+					mostrarNotificacion('Ticket eliminado', 'success');
+				}
+			} catch (error) {
+				mostrarNotificacion('Error al eliminar', 'error');
+			}
+		}
+
+		// ========== AHORROS ==========
+		async function agregarAhorro(e) {
+			e.preventDefault();
+			const data = {
+				cantidad: parseFloat(document.getElementById('ahorroCantidad').value),
+				descripcion: document.getElementById('ahorroDescripcion').value,
+				fecha: document.getElementById('ahorroFecha').value
+			};
+
+			if (data.cantidad <= 0) {
+				mostrarNotificacion('La cantidad debe ser mayor a 0', 'error');
+				return;
+			}
+
+			try {
+				const response = await fetch(`${API_BASE_URL}/ahorros`, {
+					method: 'POST',
+					headers: getAuthHeaders(),
+					body: JSON.stringify(data)
+				});
+
+				if (response.ok) {
+					document.getElementById('ahorroForm').reset();
+					document.getElementById('ahorroFecha').value = new Date().toISOString().split('T')[0];
+					cargarAhorros();
+					cargarEstadisticas();
+					cargarPredicciones();
+					cargarGraficas();
+					mostrarNotificacion(`Ahorro de $${data.cantidad.toFixed(2)} registrado exitosamente`, 'success');
+				} else {
+					const error = await response.json();
+					mostrarNotificacion(error.error || 'Error al registrar ahorro', 'error');
+				}
+			} catch (error) {
+				mostrarNotificacion('Error de conexión', 'error');
+			}
+		}
+
+		async function cargarAhorros() {
+			try {
+				const response = await fetch(`${API_BASE_URL}/ahorros?limite=50`, {
+					headers: getAuthHeaders()
+				});
+				const ahorros = await response.json();
+				
+				// Cargar total
+				const responseTotal = await fetch(`${API_BASE_URL}/ahorros/total`, {
+					headers: getAuthHeaders()
+				});
+				const totalData = await responseTotal.json();
+				document.getElementById('totalAhorros').textContent = `$${totalData.total.toFixed(2)}`;
+				
+				const hoy = new Date();
+				const ahorroMes = ahorros
+					.filter(a => {
+						const fa = new Date(a.fecha);
+						return fa.getFullYear() === hoy.getFullYear() && fa.getMonth() === hoy.getMonth();
+					})
+					.reduce((acc, a) => acc + (parseFloat(a.cantidad) || 0), 0);
+				const metaAhorro = parseFloat(preferencias.meta_ahorro_mensual || 0);
+				const avanceMeta = metaAhorro > 0 ? Math.min((ahorroMes / metaAhorro) * 100, 999) : 0;
+				const faltante = metaAhorro > 0 ? Math.max(metaAhorro - ahorroMes, 0) : 0;
+				document.getElementById('ahorroMesResumen').textContent = `$${ahorroMes.toFixed(2)}`;
+				document.getElementById('metaAhorroResumen').textContent = `$${metaAhorro.toFixed(2)}`;
+				document.getElementById('avanceMetaAhorro').textContent = `${avanceMeta.toFixed(1)}%`;
+				document.getElementById('faltanteMetaAhorro').textContent = `$${faltante.toFixed(2)}`;
+				
+				const list = document.getElementById('ahorrosList');
+				if (ahorros.length === 0) {
+					list.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No hay ahorros registrados</p>';
+					return;
+				}
+
+				list.innerHTML = ahorros.map(ahorro => `
+					<div class="list-item">
+						<div class="list-item-info">
+							<div class="list-item-title">${ahorro.descripcion || 'Ahorro'}</div>
+							<div class="list-item-meta">
+								<span>${new Date(ahorro.fecha).toLocaleDateString('es-ES')}</span>
+							</div>
+						</div>
+						<div style="display: flex; align-items: center;">
+							<div class="list-item-amount" style="color: #28a745;">+$${ahorro.cantidad.toFixed(2)}</div>
+							<button class="btn btn-danger" onclick="eliminarAhorro(${ahorro.id})" style="padding: 8px 16px;">🗑️</button>
+						</div>
+					</div>
+				`).join('');
+			} catch (error) {
+				console.error('Error cargando ahorros:', error);
+			}
+		}
+
+		async function eliminarAhorro(id) {
+			if (!confirm('¿Estás seguro de eliminar este ahorro?')) return;
+
+			try {
+				const response = await fetch(`${API_BASE_URL}/ahorros/${id}`, {
+					method: 'DELETE',
+					headers: getAuthHeaders()
+				});
+
+				if (response.ok) {
+					cargarAhorros();
+					cargarEstadisticas();
+					cargarPredicciones();
+					cargarGraficas();
+					mostrarNotificacion('Ahorro eliminado', 'success');
+				}
+			} catch (error) {
+				mostrarNotificacion('Error al eliminar', 'error');
+			}
+		}
+
+		// ========== RACHA ==========
+		async function cargarRacha() {
+			try {
+				const response = await fetch(`${API_BASE_URL}/ahorro/racha`, {
+					headers: getAuthHeaders()
+				});
+				const data = await response.json();
+				
+				document.getElementById('rachaDisplay').textContent = data.racha;
+				document.getElementById('rachaAhorro').textContent = data.racha;
+				document.getElementById('rachaText').textContent = `${data.dias_totales} días totales de ahorro`;
+
+				const diasList = document.getElementById('diasAhorroList');
+				if (data.dias.length === 0) {
+					diasList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No hay días de ahorro registrados</p>';
+				} else {
+					diasList.innerHTML = data.dias.map(fecha => `
+						<div class="list-item">
+							<div class="list-item-info">
+								<div class="list-item-title">✅ Día de ahorro</div>
+								<div class="list-item-meta">${new Date(fecha).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+							</div>
+						</div>
+					`).join('');
+				}
+			} catch (error) {
+				console.error('Error cargando racha:', error);
+			}
+		}
+
+		async function marcarAhorro() {
+			try {
+				const response = await fetch(`${API_BASE_URL}/ahorro/marcar`, {
+					method: 'POST',
+					headers: getAuthHeaders(),
+					body: JSON.stringify({ fecha: new Date().toISOString().split('T')[0] })
+				});
+
+				if (response.ok) {
+					const data = await response.json();
+					mostrarNotificacion(`¡Día marcado! Tu racha actual es de ${data.racha} días`, 'success');
+					cargarRacha();
+					cargarNotificaciones();
+				} else {
+					const error = await response.json();
+					mostrarNotificacion(error.error || 'Ya marcaste este día', 'error');
+				}
+			} catch (error) {
+				mostrarNotificacion('Error de conexión', 'error');
+			}
+		}
+
+		// ========== ESTADÍSTICAS ==========
+		async function cargarEstadisticas() {
+			const mesInput = document.getElementById('estadisticasMes');
+			const [año, mes] = mesInput.value.split('-').map(Number);
+
+			try {
+				const response = await fetch(`${API_BASE_URL}/estadisticas?año=${año}&mes=${mes}`, {
+					headers: getAuthHeaders()
+				});
+				const stats = await response.json();
+				
+				document.getElementById('totalGastos').textContent = `$${stats.total_mes.toFixed(2)}`;
+				document.getElementById('gastosSubtitle').textContent = `${new Date(año, mes - 1).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}`;
+
+				const content = document.getElementById('estadisticasContent');
+				content.innerHTML = `
+					<div class="stats-grid">
+						<div class="stat-card">
+							<h3>Total Gastos</h3>
+							<div class="value">$${stats.total_gastos.toFixed(2)}</div>
+						</div>
+						<div class="stat-card">
+							<h3>Total Tickets</h3>
+							<div class="value">$${stats.total_tickets.toFixed(2)}</div>
+						</div>
+						<div class="stat-card">
+							<h3>Cantidad de Gastos</h3>
+							<div class="value">${stats.cantidad_gastos}</div>
+						</div>
+						<div class="stat-card">
+							<h3>Cantidad de Tickets</h3>
+							<div class="value">${stats.cantidad_tickets}</div>
+						</div>
+					</div>
+					<h3 style="margin-top: 30px;">Gastos por Categoría</h3>
+					<div style="margin-top: 20px;">
+						${Object.entries(stats.gastos_por_categoria).map(([cat, amount]) => `
+							<div class="list-item">
+								<div class="list-item-info">
+									<div class="list-item-title">${cat}</div>
+								</div>
+								<div class="list-item-amount">$${amount.toFixed(2)}</div>
+							</div>
+						`).join('')}
+					</div>
+				`;
+			} catch (error) {
+				console.error('Error cargando estadísticas:', error);
+			}
+		}
+
+		// ========== GRÁFICAS ==========
+		async function cargarGraficas() {
+			const periodo = document.getElementById('graficasPeriodo').value;
+			const tipo = document.getElementById('graficasTipo').value;
+			const hoy = new Date();
+			let año = hoy.getFullYear();
+			let mes = hoy.getMonth() + 1;
+
+			try {
+				// Obtener datos según período
+				let datos = [];
+				if (periodo === 'mes') {
+					const response = await fetch(`${API_BASE_URL}/estadisticas?año=${año}&mes=${mes}`, {
+						headers: getAuthHeaders()
+					});
+					const stats = await response.json();
+					datos = Object.entries(stats.gastos_por_categoria);
+				} else if (periodo === '3meses') {
+					// Obtener últimos 3 meses
+					for (let i = 0; i < 3; i++) {
+						const m = mes - i;
+						const a = m <= 0 ? año - 1 : año;
+						const mFinal = m <= 0 ? 12 + m : m;
+						const response = await fetch(`${API_BASE_URL}/estadisticas?año=${a}&mes=${mFinal}`, {
+							headers: getAuthHeaders()
+						});
+						const stats = await response.json();
+						datos.push({ mes: mFinal, año: a, total: stats.total_mes });
+					}
+				}
+
+				const ctx = document.getElementById('chartCanvas').getContext('2d');
+				
+				if (chartInstance) {
+					chartInstance.destroy();
+				}
+
+				if (tipo === 'categoria' && periodo === 'mes') {
+					chartInstance = new Chart(ctx, {
+						type: 'doughnut',
+						data: {
+							labels: datos.map(d => d[0]),
+							datasets: [{
+								data: datos.map(d => d[1]),
+								backgroundColor: [
+									'#004481', '#0074c1', '#ffd100', '#28a745', '#dc3545', '#6f42c1', '#fd7e14'
+								]
+							}]
+						},
+						options: {
+							responsive: true,
+							maintainAspectRatio: true,
+							plugins: {
+								legend: {
+									position: 'right'
+								}
+							}
+						}
+					});
+				} else if (tipo === 'tiempo' && periodo === '3meses') {
+					chartInstance = new Chart(ctx, {
+						type: 'line',
+						data: {
+							labels: datos.reverse().map(d => `${d.mes}/${d.año}`),
+							datasets: [{
+								label: 'Gastos',
+								data: datos.map(d => d.total),
+								borderColor: '#004481',
+								backgroundColor: 'rgba(0, 68, 129, 0.1)',
+								tension: 0.4,
+								fill: true
+							}]
+						},
+						options: {
+							responsive: true,
+							maintainAspectRatio: true,
+							scales: {
+								y: {
+									beginAtZero: true
+								}
+							}
+						}
+					});
+				} else {
+					// Gráfica de barras por defecto
+					chartInstance = new Chart(ctx, {
+						type: 'bar',
+						data: {
+							labels: datos.map(d => d[0] || `${d.mes}/${d.año}`),
+							datasets: [{
+								label: 'Gastos',
+								data: datos.map(d => d[1] || d.total),
+								backgroundColor: '#004481'
+							}]
+						},
+						options: {
+							responsive: true,
+							maintainAspectRatio: true,
+							scales: {
+								y: {
+									beginAtZero: true
+								}
+							}
+						}
+					});
+				}
+			} catch (error) {
+				console.error('Error cargando gráficas:', error);
+			}
+		}
+
+		// ========== ANÁLISIS ==========
+		async function cargarAnalisis() {
+			const mesInput = document.getElementById('analisisMes');
+			const [año, mes] = mesInput.value.split('-').map(Number);
+
+			try {
+				const response = await fetch(`${API_BASE_URL}/analisis/gastos?año=${año}&mes=${mes}`, {
+					headers: getAuthHeaders()
+				});
+				const analisis = await response.json();
+				
+				const content = document.getElementById('analisisContent');
+				content.innerHTML = `
+					<div class="stats-grid">
+						<div class="stat-card">
+							<h3>Ingresos</h3>
+							<div class="value">$${analisis.ingresos.toFixed(2)}</div>
+						</div>
+						<div class="stat-card">
+							<h3>Gastos Totales</h3>
+							<div class="value">$${analisis.total_gastos.toFixed(2)}</div>
+							<div class="trend ${analisis.cambio_porcentual > 0 ? 'up' : 'down'}">
+								${analisis.cambio_porcentual > 0 ? '↑' : '↓'} ${Math.abs(analisis.cambio_porcentual).toFixed(1)}%
+							</div>
+						</div>
+						<div class="stat-card">
+							<h3>Ahorros del Mes</h3>
+							<div class="value" style="color: #28a745;">$${analisis.total_ahorros.toFixed(2)}</div>
+						</div>
+						<div class="stat-card">
+							<h3>Balance</h3>
+							<div class="value" style="color: ${analisis.balance >= 0 ? '#28a745' : '#dc3545'};">$${analisis.balance.toFixed(2)}</div>
+						</div>
+					</div>
+					<div style="margin-top: 30px;">
+						<h3>Recomendaciones</h3>
+						${analisis.recomendaciones.map(rec => `
+							<div class="list-item" style="background: #f0f7ff; border-left: 4px solid var(--color-primario);">
+								<div class="list-item-info">
+									<div class="list-item-title">${rec}</div>
+								</div>
+							</div>
+						`).join('')}
+					</div>
+					<div style="margin-top: 30px;">
+						<h3>Métricas</h3>
+						<div class="stats-grid">
+							<div class="stat-card">
+								<h3>% de Ingresos en Gastos</h3>
+								<div class="value">${analisis.porcentaje_gastos.toFixed(1)}%</div>
+							</div>
+							<div class="stat-card">
+								<h3>% de Ingresos en Ahorros</h3>
+								<div class="value" style="color: #28a745;">${analisis.porcentaje_ahorros.toFixed(1)}%</div>
+							</div>
+							<div class="stat-card">
+								<h3>Transacciones</h3>
+								<div class="value">${analisis.cantidad_transacciones}</div>
+							</div>
+						</div>
+					</div>
+				`;
+			} catch (error) {
+				console.error('Error cargando análisis:', error);
+			}
+		}
+
+		// ========== REPORTES ==========
+		async function generarReporte(e) {
+			e.preventDefault();
+			const fecha = document.getElementById('reporteFecha').value;
+			const tipo = document.getElementById('reporteTipo').value;
+			const [año, mes] = fecha.split('-').map(Number);
+
+			const content = document.getElementById('reporteContent');
+			content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Generando reporte...</p></div>';
+
+			try {
+				// Generar reporte en PDF
+				const response = await fetch(`${API_BASE_URL}/reportes/generar-pdf`, {
+					method: 'POST',
+					headers: getAuthHeaders(),
+					body: JSON.stringify({ año, mes, tipo: tipo === 'mensual' ? 'mensual' : 'mensual' })
+				});
+				const reporte = await response.json();
+				
+				if (response.ok) {
+					content.innerHTML = `
+						<div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+							<div class="alert alert-success">
+								<h3 style="margin-bottom: 15px;">✅ Reporte Generado Exitosamente</h3>
+								<p style="margin-bottom: 15px;">Tu reporte ${tipo === 'mensual' ? 'mensual' : 'anual'} ha sido generado en formato PDF.</p>
+								<a href="${API_BASE_URL}${reporte.ruta}" target="_blank" class="btn" style="text-decoration: none; display: inline-block;">
+									📥 Descargar Reporte PDF
+								</a>
+							</div>
+						</div>
+					`;
+				} else {
+					content.innerHTML = `<div class="alert alert-error">Error: ${reporte.error || 'Error al generar reporte'}</div>`;
+				}
+			} catch (error) {
+				content.innerHTML = '<div class="alert alert-error">Error de conexión al generar reporte</div>';
+				mostrarNotificacion('Error al generar reporte', 'error');
+			}
+		}
+
+		// ========== PREDICCIONES ==========
+		async function cargarPredicciones() {
+			try {
+				const response = await fetch(`${API_BASE_URL}/predicciones`, {
+					headers: getAuthHeaders()
+				});
+				const pred = await response.json();
+				
+				document.getElementById('proyeccionMes').textContent = `$${pred.proyeccion_mes.toFixed(2)}`;
+				document.getElementById('proyeccionSubtitle').textContent = pred.recomendacion === 'Alto' ? '⚠️ Alto consumo' : '✓ Normal';
+
+				const content = document.getElementById('prediccionesContent');
+				content.innerHTML = `
+					<div class="stats-grid">
+						<div class="stat-card">
+							<h3>Gasto Actual</h3>
+							<div class="value">$${pred.gasto_actual.toFixed(2)}</div>
+						</div>
+						<div class="stat-card">
+							<h3>Gasto Mes Anterior</h3>
+							<div class="value">$${pred.gasto_mes_anterior.toFixed(2)}</div>
+						</div>
+						<div class="stat-card">
+							<h3>Cambio Porcentual</h3>
+							<div class="value" style="color: ${pred.cambio_porcentual >= 0 ? '#dc3545' : '#28a745'}">
+								${pred.cambio_porcentual >= 0 ? '+' : ''}${pred.cambio_porcentual.toFixed(1)}%
+							</div>
+						</div>
+						<div class="stat-card">
+							<h3>Categoría Mayor Gasto</h3>
+							<div class="value">${pred.categoria_mayor_gasto.nombre}</div>
+							<div class="subtitle">$${pred.categoria_mayor_gasto.cantidad.toFixed(2)}</div>
+						</div>
+					</div>
+					<div style="margin-top: 25px; padding: 20px; background: ${pred.recomendacion === 'Alto' ? '#f8d7da' : '#d4edda'}; border-radius: 12px; border-left: 4px solid ${pred.recomendacion === 'Alto' ? '#dc3545' : '#28a745'};">
+						<strong>Recomendación:</strong> Tu nivel de gasto es <strong>${pred.recomendacion}</strong>.
+						${pred.recomendacion === 'Alto' ? ' Considera revisar tus gastos y ajustar tu presupuesto.' : ' ¡Sigue así!'}
+					</div>
+				`;
+			} catch (error) {
+				console.error('Error cargando predicciones:', error);
+			}
+		}
+
+		// ========== UTILIDADES ==========
+		function mostrarNotificacion(mensaje, tipo) {
+			// Crear notificación temporal
+			const notif = document.createElement('div');
+			notif.style.cssText = `
+				position: fixed;
+				top: 80px;
+				right: 20px;
+				background: ${tipo === 'success' ? '#28a745' : '#dc3545'};
+				color: white;
+				padding: 15px 20px;
+				border-radius: 10px;
+				box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+				z-index: 10000;
+				animation: slideIn 0.3s;
+			`;
+			notif.textContent = mensaje;
+			document.body.appendChild(notif);
+			
+			setTimeout(() => {
+				notif.style.animation = 'slideOut 0.3s';
+				setTimeout(() => notif.remove(), 300);
+			}, 3000);
+		}
+
+		async function logout() {
+			try {
+				await fetch(`${API_BASE_URL}/logout`, {
+					method: 'POST',
+					headers: getAuthHeaders()
+				});
+			} catch (error) {
+				console.error('Error en logout:', error);
+			}
+			localStorage.removeItem('authToken');
+			localStorage.removeItem('currentUser');
+			window.location.href = 'login.html';
+		}
+	</script>
+</body>
+</html>
+

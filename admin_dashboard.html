@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>FinanIA - Panel de Administrador</title>
+	<style>
+		:root {
+			--color-primario: #004481;
+			--color-secundario: #ffd100;
+			--color-fondo: #f7f9fc;
+			--color-texto: #333;
+			--color-success: #28a745;
+			--color-danger: #dc3545;
+		}
+		
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: "Segoe UI", Arial, sans-serif;
+		}
+
+		body {
+			background-color: var(--color-fondo);
+			color: var(--color-texto);
+		}
+
+		/* Header */
+		header {
+			background-color: var(--color-primario);
+			color: white;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 15px 40px;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+		}
+
+		header h1 {
+			font-size: 1.6em;
+			font-weight: 700;
+		}
+
+		.header-right {
+			display: flex;
+			align-items: center;
+			gap: 15px;
+		}
+
+		.btn-header {
+			background-color: var(--color-secundario);
+			color: var(--color-primario);
+			border: none;
+			padding: 8px 16px;
+			border-radius: 6px;
+			cursor: pointer;
+			font-weight: bold;
+			transition: 0.3s;
+		}
+
+		.btn-header:hover {
+			background-color: #e6b800;
+		}
+
+		/* Container */
+		.container {
+			max-width: 1600px;
+			margin: 0 auto;
+			padding: 30px 20px;
+		}
+
+		/* Stats Cards */
+		.stats-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+			gap: 20px;
+			margin-bottom: 30px;
+		}
+
+		.stat-card {
+			background: white;
+			border-radius: 16px;
+			padding: 25px;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+			border-left: 4px solid var(--color-primario);
+		}
+
+		.stat-card h3 {
+			color: #666;
+			font-size: 0.85em;
+			margin-bottom: 10px;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+		}
+
+		.stat-card .value {
+			font-size: 2.5em;
+			font-weight: bold;
+			color: var(--color-primario);
+		}
+
+		/* Tabs */
+		.tabs {
+			display: flex;
+			gap: 10px;
+			margin-bottom: 25px;
+			border-bottom: 2px solid #e0e0e0;
+			overflow-x: auto;
+			padding-bottom: 10px;
+		}
+
+		.tab {
+			padding: 12px 24px;
+			background: none;
+			border: none;
+			cursor: pointer;
+			font-size: 1em;
+			color: #666;
+			border-bottom: 3px solid transparent;
+			transition: 0.3s;
+			white-space: nowrap;
+			font-weight: 500;
+		}
+
+		.tab.active {
+			color: var(--color-primario);
+			border-bottom-color: var(--color-primario);
+			font-weight: bold;
+		}
+
+		.tab:hover {
+			color: var(--color-primario);
+		}
+
+		/* Content Sections */
+		.content-section {
+			display: none;
+			background: white;
+			border-radius: 16px;
+			padding: 30px;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+		}
+
+		.content-section.active {
+			display: block;
+		}
+
+		/* Tables */
+		.table-container {
+			overflow-x: auto;
+			margin-top: 20px;
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+
+		table th,
+		table td {
+			padding: 12px;
+			text-align: left;
+			border-bottom: 1px solid #e0e0e0;
+		}
+
+		table th {
+			background-color: var(--color-primario);
+			color: white;
+			font-weight: bold;
+		}
+
+		table tr:hover {
+			background-color: #f8f9fa;
+		}
+
+		/* Buttons */
+		.btn {
+			background-color: var(--color-primario);
+			color: white;
+			border: none;
+			padding: 10px 20px;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 0.95em;
+			font-weight: bold;
+			transition: all 0.3s;
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.btn:hover {
+			background-color: #00335d;
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+		}
+
+		.btn-success {
+			background-color: var(--color-success);
+		}
+
+		.btn-success:hover {
+			background-color: #218838;
+		}
+
+		.btn-danger {
+			background-color: var(--color-danger);
+		}
+
+		.btn-danger:hover {
+			background-color: #c82333;
+		}
+
+		.btn-warning {
+			background-color: var(--color-secundario);
+			color: var(--color-primario);
+		}
+
+		/* User Card */
+		.user-card {
+			background: white;
+			border-radius: 12px;
+			padding: 20px;
+			margin-bottom: 15px;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.user-info h4 {
+			margin-bottom: 5px;
+			color: var(--color-primario);
+		}
+
+		.user-info p {
+			color: #666;
+			font-size: 0.9em;
+		}
+
+		.badge {
+			display: inline-block;
+			padding: 4px 12px;
+			border-radius: 12px;
+			font-size: 0.85em;
+			font-weight: bold;
+		}
+
+		.badge-admin {
+			background-color: var(--color-secundario);
+			color: var(--color-primario);
+		}
+
+		.badge-user {
+			background-color: #e0e0e0;
+			color: #666;
+		}
+
+		/* Loading */
+		.loading {
+			text-align: center;
+			padding: 40px;
+			color: #666;
+		}
+
+		.spinner {
+			border: 4px solid #f3f3f3;
+			border-top: 4px solid var(--color-primario);
+			border-radius: 50%;
+			width: 40px;
+			height: 40px;
+			animation: spin 1s linear infinite;
+			margin: 0 auto 20px;
+		}
+
+		@keyframes spin {
+			0% { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
+
+		/* Form Group */
+		.form-group {
+			margin-bottom: 20px;
+		}
+
+		.form-group label {
+			display: block;
+			margin-bottom: 8px;
+			color: var(--color-texto);
+			font-weight: 600;
+		}
+
+		.form-group select,
+		.form-group input {
+			width: 100%;
+			padding: 12px;
+			border: 2px solid #e0e0e0;
+			border-radius: 10px;
+			font-size: 1em;
+		}
+
+		/* Alert */
+		.alert {
+			padding: 15px 20px;
+			border-radius: 8px;
+			margin-bottom: 20px;
+		}
+
+		.alert-success {
+			background-color: #d4edda;
+			color: #155724;
+			border-left: 4px solid var(--color-success);
+		}
+
+		.alert-error {
+			background-color: #f8d7da;
+			color: #721c24;
+			border-left: 4px solid var(--color-danger);
+		}
+
+		/* Responsive */
+		@media (max-width: 768px) {
+			header {
+				flex-direction: column;
+				gap: 15px;
+				padding: 15px 20px;
+			}
+
+			.stats-grid {
+				grid-template-columns: 1fr;
+			}
+
+			.user-card {
+				flex-direction: column;
+				align-items: flex-start;
+				gap: 15px;
+			}
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<h1>️ FinanIA  Administrador</h1>
+		<div class="header-right">
+			<span id="adminName">Administrador</span>
+			<button class="btn-header" onclick="logout()">Cerrar Sesión</button>
+		</div>
+	</header>
+
+	<div class="container">
+		<!-- Stats Cards -->
+		<div class="stats-grid">
+			<div class="stat-card">
+				<h3>Total Usuarios</h3>
+				<div class="value" id="totalUsuarios">0</div>
+			</div>
+			<div class="stat-card">
+				<h3>Usuarios Activos</h3>
+				<div class="value" id="usuariosActivos">0</div>
+			</div>
+			<div class="stat-card">
+				<h3>Total Gastos</h3>
+				<div class="value" id="totalGastos">$0.00</div>
+			</div>
+			<div class="stat-card">
+				<h3>Total Ahorros</h3>
+				<div class="value" id="totalAhorros">$0.00</div>
+			</div>
+		</div>
+
+		<!-- Tabs -->
+		<div class="tabs">
+			<button class="tab active" onclick="showTab('usuarios')">👥 Usuarios</button>
+			<button class="tab" onclick="showTab('estadisticas')">📊 Estadísticas Globales</button>
+			<button class="tab" onclick="showTab('reportes')">📄 Generar Reportes</button>
+		</div>
+
+		<!-- Usuarios Section -->
+		<div id="usuarios" class="content-section active">
+			<h2>Gestión de Usuarios</h2>
+			<div id="usuariosList" class="loading">
+				<div class="spinner"></div>
+				<p>Cargando usuarios...</p>
+			</div>
+		</div>
+
+		<!-- Estadísticas Section -->
+		<div id="estadisticas" class="content-section">
+			<h2>Estadísticas Globales</h2>
+			<div id="estadisticasContent" class="loading">
+				<div class="spinner"></div>
+				<p>Cargando estadísticas...</p>
+			</div>
+		</div>
+
+		<!-- Reportes Section -->
+		<div id="reportes" class="content-section">
+			<h2>Generar Reportes</h2>
+			<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+				<div>
+					<h3>Reporte Semanal Global</h3>
+					<p style="color: #666; margin-bottom: 20px;">Genera un reporte PDF con las estadísticas de todos los usuarios de la semana pasada.</p>
+					<button class="btn btn-success" onclick="generarReporteSemanalGlobal()">
+						📄 Generar Reporte Semanal Global
+					</button>
+					<div id="resultadoSemanal" style="margin-top: 15px;"></div>
+				</div>
+				<div>
+					<h3>Reporte de Usuario Específico</h3>
+					<div class="form-group">
+						<label>Seleccionar Usuario</label>
+						<select id="usuarioReporte" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px;">
+							<option value="">Cargando usuarios...</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label>Tipo de Reporte</label>
+						<select id="tipoReporte" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px;">
+							<option value="semanal">Semanal</option>
+							<option value="mensual">Mensual</option>
+						</select>
+					</div>
+					<button class="btn btn-success" onclick="generarReporteUsuario()">
+						📄 Generar Reporte de Usuario
+					</button>
+					<div id="resultadoUsuario" style="margin-top: 15px;"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		const API_BASE_URL = 'http://localhost:5000/api';
+		let authToken = localStorage.getItem('authToken');
+		let currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+		// Verificar autenticación y permisos
+		if (!authToken) {
+			window.location.href = 'login.html';
+		}
+
+		// Verificar si es administrador
+		if (!currentUser.es_administrador) {
+			alert('Acceso denegado. Se requieren permisos de administrador.');
+			window.location.href = 'dashboard.html';
+		}
+
+		// Inicializar
+		document.addEventListener('DOMContentLoaded', function() {
+			document.getElementById('adminName').textContent = currentUser.nombre || 'Administrador';
+			cargarUsuarios();
+			cargarEstadisticasGlobales();
+		});
+
+		function getAuthHeaders() {
+			return {
+				'Authorization': `Bearer ${authToken}`,
+				'Content-Type': 'application/json'
+			};
+		}
+
+		function showTab(tabName) {
+			document.querySelectorAll('.content-section').forEach(section => {
+				section.classList.remove('active');
+			});
+			document.querySelectorAll('.tab').forEach(tab => {
+				tab.classList.remove('active');
+			});
+
+			document.getElementById(tabName).classList.add('active');
+			event.target.classList.add('active');
+
+			if (tabName === 'estadisticas') {
+				cargarEstadisticasGlobales();
+			}
+		}
+
+		// ========== USUARIOS ==========
+		async function cargarUsuarios() {
+			try {
+				const response = await fetch(`${API_BASE_URL}/admin/usuarios`, {
+					headers: getAuthHeaders()
+				});
+				const usuarios = await response.json();
+				
+				const list = document.getElementById('usuariosList');
+				
+				if (usuarios.length === 0) {
+					list.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No hay usuarios registrados</p>';
+					return;
+				}
+
+				// Actualizar select de usuarios para reportes
+				const selectReporte = document.getElementById('usuarioReporte');
+				selectReporte.innerHTML = '<option value="">Seleccionar usuario...</option>' +
+					usuarios.map(u => `<option value="${u.id}">${u.nombre} (${u.email})</option>`).join('');
+
+				list.innerHTML = usuarios.map(usuario => `
+					<div class="user-card">
+						<div class="user-info">
+							<h4>${usuario.nombre}</h4>
+							<p>${usuario.email}</p>
+							<p style="font-size: 0.85em; color: #999; margin-top: 5px;">
+								Registrado: ${new Date(usuario.fecha_registro).toLocaleDateString('es-ES')}
+							</p>
+						</div>
+						<div style="display: flex; align-items: center; gap: 15px;">
+							<span class="badge ${usuario.es_administrador ? 'badge-admin' : 'badge-user'}">
+								${usuario.es_administrador ? '👑 Administrador' : '👤 Usuario'}
+							</span>
+							<button class="btn" onclick="verDetallesUsuario(${usuario.id})">
+								📊 Ver Detalles
+							</button>
+						</div>
+					</div>
+				`).join('');
+
+				// Actualizar estadística
+				document.getElementById('totalUsuarios').textContent = usuarios.length;
+			} catch (error) {
+				console.error('Error cargando usuarios:', error);
+				document.getElementById('usuariosList').innerHTML = 
+					'<div class="alert alert-error">Error al cargar usuarios. Por favor recarga la página.</div>';
+			}
+		}
+
+		async function verDetallesUsuario(usuarioId) {
+			try {
+				const response = await fetch(`${API_BASE_URL}/admin/usuario/${usuarioId}`, {
+					headers: getAuthHeaders()
+				});
+				const datos = await response.json();
+				
+				if (response.ok) {
+					// Mostrar modal o nueva sección con detalles
+					const detalles = `
+						<div style="background: white; padding: 30px; border-radius: 16px; margin-top: 20px;">
+							<h3>Detalles de ${datos.usuario.nombre}</h3>
+							<div class="stats-grid" style="margin-top: 20px;">
+								<div class="stat-card">
+									<h3>Total Ahorros</h3>
+									<div class="value">$${datos.total_ahorros.toFixed(2)}</div>
+								</div>
+								<div class="stat-card">
+									<h3>Racha de Ahorro</h3>
+									<div class="value">${datos.racha_ahorro} días</div>
+								</div>
+								<div class="stat-card">
+									<h3>Ingresos Mensuales</h3>
+									<div class="value">$${datos.ingresos_mensuales.toFixed(2)}</div>
+								</div>
+								<div class="stat-card">
+									<h3>Gastos del Mes</h3>
+									<div class="value">$${datos.estadisticas_mes_actual.total_mes.toFixed(2)}</div>
+								</div>
+							</div>
+							<h4 style="margin-top: 30px;">Gastos por Categoría</h4>
+							<div class="table-container">
+								<table>
+									<thead>
+										<tr>
+											<th>Categoría</th>
+											<th>Monto</th>
+										</tr>
+									</thead>
+									<tbody>
+										${Object.entries(datos.estadisticas_mes_actual.gastos_por_categoria || {}).map(([cat, monto]) => `
+											<tr>
+												<td>${cat}</td>
+												<td>$${monto.toFixed(2)}</td>
+											</tr>
+										`).join('')}
+									</tbody>
+								</table>
+							</div>
+							<button class="btn" onclick="document.getElementById('detallesUsuario').remove();" style="margin-top: 20px;">
+								Cerrar
+							</button>
+						</div>
+					`;
+					
+					const detallesDiv = document.createElement('div');
+					detallesDiv.id = 'detallesUsuario';
+					detallesDiv.innerHTML = detalles;
+					document.getElementById('usuarios').appendChild(detallesDiv);
+				}
+			} catch (error) {
+				alert('Error al cargar detalles del usuario');
+			}
+		}
+
+		// ========== ESTADÍSTICAS GLOBALES ==========
+		async function cargarEstadisticasGlobales() {
+			try {
+				const response = await fetch(`${API_BASE_URL}/admin/estadisticas-globales`, {
+					headers: getAuthHeaders()
+				});
+				const stats = await response.json();
+				
+				if (response.ok) {
+					// Actualizar cards
+					document.getElementById('usuariosActivos').textContent = stats.usuarios_activos || 0;
+					document.getElementById('totalGastos').textContent = `$${(stats.total_gastos || 0).toFixed(2)}`;
+					document.getElementById('totalAhorros').textContent = `$${(stats.total_ahorros || 0).toFixed(2)}`;
+					
+					// Mostrar estadísticas detalladas
+					const content = document.getElementById('estadisticasContent');
+					content.innerHTML = `
+						<div class="stats-grid">
+							<div class="stat-card">
+								<h3>Gastos del Mes Actual</h3>
+								<div class="value">$${(stats.gastos_mes_actual || 0).toFixed(2)}</div>
+							</div>
+							<div class="stat-card">
+								<h3>Tickets del Mes</h3>
+								<div class="value">$${(stats.tickets_mes_actual || 0).toFixed(2)}</div>
+							</div>
+							<div class="stat-card">
+								<h3>Ahorros del Mes</h3>
+								<div class="value">$${(stats.ahorros_mes_actual || 0).toFixed(2)}</div>
+							</div>
+						</div>
+						<div style="margin-top: 30px;">
+							<h3>Resumen General</h3>
+							<p style="margin-top: 15px; color: #666;">
+								El sistema cuenta con <strong>${stats.total_usuarios}</strong> usuarios registrados, 
+								de los cuales <strong>${stats.usuarios_activos}</strong> están activos (han iniciado sesión en los últimos 7 días).
+							</p>
+							<p style="margin-top: 10px; color: #666;">
+								El total acumulado de gastos es de <strong>$${(stats.total_gastos || 0).toFixed(2)}</strong> 
+								y el total de ahorros es de <strong>$${(stats.total_ahorros || 0).toFixed(2)}</strong>.
+							</p>
+						</div>
+					`;
+				}
+			} catch (error) {
+				console.error('Error cargando estadísticas:', error);
+				document.getElementById('estadisticasContent').innerHTML = 
+					'<div class="alert alert-error">Error al cargar estadísticas globales.</div>';
+			}
+		}
+
+		// ========== REPORTES ==========
+		async function generarReporteSemanalGlobal() {
+			const resultado = document.getElementById('resultadoSemanal');
+			resultado.innerHTML = '<p>Generando reporte...</p>';
+			
+			try {
+				const response = await fetch(`${API_BASE_URL}/admin/reporte-semanal-global`, {
+					method: 'POST',
+					headers: getAuthHeaders()
+				});
+				const data = await response.json();
+				
+				if (response.ok) {
+					resultado.innerHTML = `
+						<div class="alert alert-success">
+							✅ Reporte generado exitosamente
+							<br><a href="${API_BASE_URL}${data.ruta}" target="_blank" class="btn" style="margin-top: 10px; text-decoration: none; display: inline-block;">
+								📥 Descargar PDF
+							</a>
+						</div>
+					`;
+				} else {
+					resultado.innerHTML = `<div class="alert alert-error">Error: ${data.error}</div>`;
+				}
+			} catch (error) {
+				resultado.innerHTML = '<div class="alert alert-error">Error al generar reporte</div>';
+			}
+		}
+
+		async function generarReporteUsuario() {
+			const usuarioId = document.getElementById('usuarioReporte').value;
+			const tipo = document.getElementById('tipoReporte').value;
+			const resultado = document.getElementById('resultadoUsuario');
+			
+			if (!usuarioId) {
+				resultado.innerHTML = '<div class="alert alert-error">Por favor selecciona un usuario</div>';
+				return;
+			}
+			
+			resultado.innerHTML = '<p>Generando reporte...</p>';
+			
+			try {
+				const response = await fetch(`${API_BASE_URL}/admin/reporte-usuario/${usuarioId}`, {
+					method: 'POST',
+					headers: getAuthHeaders(),
+					body: JSON.stringify({ tipo })
+				});
+				const data = await response.json();
+				
+				if (response.ok) {
+					resultado.innerHTML = `
+						<div class="alert alert-success">
+							✅ Reporte generado exitosamente
+							<br><a href="${API_BASE_URL}${data.ruta}" target="_blank" class="btn" style="margin-top: 10px; text-decoration: none; display: inline-block;">
+								📥 Descargar PDF
+							</a>
+						</div>
+					`;
+				} else {
+					resultado.innerHTML = `<div class="alert alert-error">Error: ${data.error}</div>`;
+				}
+			} catch (error) {
+				resultado.innerHTML = '<div class="alert alert-error">Error al generar reporte</div>';
+			}
+		}
+
+		// ========== LOGOUT ==========
+		async function logout() {
+			try {
+				await fetch(`${API_BASE_URL}/logout`, {
+					method: 'POST',
+					headers: getAuthHeaders()
+				});
+			} catch (error) {
+				console.error('Error en logout:', error);
+			}
+			localStorage.removeItem('authToken');
+			localStorage.removeItem('currentUser');
+			window.location.href = 'login.html';
+		}
+	</script>
+</body>
+</html>
+

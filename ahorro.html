@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>FinanIA - Ahorro</title>
+		<style>
+			*{
+				margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: "Segoe UI",Arial,sans-serif;
+			}
+			body{
+				background: #f7f9fc;
+	color: #333;
+			}
+			header{
+				background: #004481;
+	color: white;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 15px 40px;
+	position: sticky;
+	top: 0;
+	z-index: 100;
+			}
+			header h1{
+				font-size: 1.6em;
+	font-weight: 700;
+			}
+			nav a{
+				color: white;
+	text-decoration: none;
+	margin-left: 20px;
+	font-weight: 500;
+	transition: 0.3s;
+			}
+			nav a:hover{
+				color: #ffd100;
+			}
+
+			.hero {
+    background: url("https://static.vecteezy.com/system/resources/previews/017/662/749/original/abstract-blue-modern-design-background-free-photo.jpg");
+    color: white;
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 60px;
+}
+			}
+			.hero h2{
+				font-size: 2.5em;
+	max-width: 600px;
+			}
+			.hero p{
+				margin-top: 10px;
+	font-size: 1.2em;
+	max-width: 500px;
+			}
+			.hero button{
+				margin-top: 20px;
+	padding: 10px 20px;
+	border: none;
+	background-color: #ffd100;
+	color: #004481;
+	font-weight: bold;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: 0.3s;
+			}
+			.hero button:hover{
+				background-color: #e6b800;
+			}
+
+			.info{
+				text-align: center;
+	padding: 60px 40px;
+			}
+			.info h2{
+				font-size: 2em;
+	color: #004481;
+	margin-bottom: 30px;
+			}
+			.cards{
+				display: grid;
+	grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+	gap: 30px;
+			}
+			.card{
+				background: white;
+	border-radius: 12px;
+	box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+	padding: 25px;
+	text-align: left;
+	transition: 0.3s;
+			}
+			.card:hover{
+				transform: translateY(-5px);
+			}
+			.card h3{
+				color: #004481;
+	margin-bottom: 10px;
+			}
+			.card p{
+				color: #555;
+	line-height: 1.5;
+			}
+
+			footer{
+				background: #00335d;
+	color: white;
+	text-align: center;
+	padding: 30px;
+	margin-top: 60px;
+			}
+			footer a{
+				color: #ffd100;
+	text-decoration: none;
+	margin: 0 10px;
+			}
+			footer a:hover{
+				text-decoration: underline;
+			}
+
+			@media(max-width:768px){
+				header{
+					flex-direction: column;
+				}.hero{
+					padding: 20px;
+	text-align: center;
+				}.hero h2{
+					font-size: 2em;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1>💰 FinanIA</h1>
+			<nav>
+				<a href="index.html">Inicio</a>
+				<a href="educacion.html">Educación</a>
+				<a href="ahorro.html">Ahorro</a>
+				<a href="inversion.html">Inversión</a>
+				<a href="login.html">Iniciar Sesión</a>
+			</nav>
+		</header>
+
+		<section class="hero">
+			<h2>Aprende a tomar mejores decisiones financieras</h2>
+			<p>Descubre herramientas, consejos y recursos para mejorar tu educación financiera de manera práctica y sencilla.</p>
+			<center><a href="login.html"><button>Comienza ahora</button></a></center>
+		</section>
+		<section class="info">
+			<h2>Consejos de Ahorro</h2>
+			<div class="cards">
+				<div class="card">
+					<h3>📊 Planificación</h3>
+					<p>Organiza tus ingresos y gastos para identificar oportunidades de ahorro real.</p>
+				</div>
+				<div class="card">
+					<h3>💡 Hábitos inteligentes</h3>
+					<p>Adopta hábitos diarios que te ayuden a gastar menos y guardar más dinero.</p>
+				</div>
+				<div class="card">
+					<h3>🏦 Herramientas financieras</h3>
+					<p>Usa cuentas de ahorro, aplicaciones y presupuestos para maximizar tus fondos.</p>
+				</div>
+				<div class="card">
+					<h3>🎯 Metas claras</h3>
+					<p>Establece objetivos específicos para motivarte y medir tu progreso financiero.</p>
+				</div>
+			</div>
+		</section>
+
+		<footer>
+			<p>FinanIA</p>
+		</footer>
+	</body>
+</html>
