@@ -203,3 +203,10 @@ if __name__ == "__main__":
         print("❌ ERROR MYSQL:", e)
 
     app.run(host="0.0.0.0", port=5000)
+
+
+from flask import redirect, url_for
+
+@app.route("/")
+def index():
+    return redirect(url_for("login"))
