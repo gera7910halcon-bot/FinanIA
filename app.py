@@ -202,6 +202,12 @@ if __name__ == "__main__":
     except Exception as e:
         print("❌ ERROR MYSQL:", e)
 
+    from flask import render_template
+
+@app.get("/")
+def home():
+    return render_template("index.html")
+
     app.run(host="0.0.0.0", port=5000)
 
 
