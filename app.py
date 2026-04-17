@@ -683,5 +683,6 @@ def archivos_publicos(filename):
 
 
 if __name__ == "__main__":
-    # debug=False evita que el reloader cierre/relance procesos en .bat
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    import os
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port, debug=False)
